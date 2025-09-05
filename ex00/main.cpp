@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     }
     try {
         BitcoinExchange btc;
-        btc.loadPriceDatabase("data.csv"); // assumes data.csv is in working dir
+        btc.loadPriceDatabase("data.csv");
         btc.evaluateInputFile(argv[1]);
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
