@@ -32,8 +32,10 @@ bool BitcoinExchange::isValidDate(const std::string &date) {
     if (date.size() != 10 || date[4] != '-' || date[7] != '-') return false;
     int y, m, d;
     std::istringstream iss(date.substr(0,4) + date.substr(5,2) + date.substr(8,2));
-    if (!(iss >> y >> m >> d)) return false; // Not robust but simple
-    if (y < 0 || m < 1 || m > 12 || d < 1) return false;
+    if (!(iss >> y >> m >> d))
+        return false;
+    if (y < 0 || m < 1 || m > 12 || d < 1)
+        return false;
     int mdays[] = {31, (isLeapYear(y) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     if (d > mdays[m-1]) return false;
     return true;

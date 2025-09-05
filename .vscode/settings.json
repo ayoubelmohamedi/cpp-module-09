@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.config": "cpp",
+        "ostream": "cpp",
+        "string": "cpp"
+    }
+}
