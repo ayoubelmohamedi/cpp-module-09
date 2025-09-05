@@ -1,0 +1,23 @@
+# Build artifacts
+*.o
+*.out
+*.a
+*.so
+*.exe
+btc
+
+# Editor/IDE files
+.vscode/
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.tmp
+
+# Logs
+*.log
