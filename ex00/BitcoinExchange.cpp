@@ -10,19 +10,6 @@ BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) : _prices(other._
 BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) { if (this != &other) _prices = other._prices; return *this; }
 BitcoinExchange::~BitcoinExchange() {}
 
-static bool isNumber(const std::string &s) {
-    if (s.empty()) return false;
-    bool dot = false;
-    for (size_t i = 0; i < s.size(); ++i) {
-        if (s[i] == '.') {
-            if (dot) return false;
-            dot = true;
-        } else if (s[i] < '0' || s[i] > '9') {
-            return false;
-        }
-    }
-    return true;
-}
 
 bool BitcoinExchange::isLeapYear(int year) {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
@@ -69,7 +56,7 @@ double BitcoinExchange::getRateForDate(const std::string &date) const {
     std::map<std::string, double>::const_iterator it = _prices.lower_bound(date);
     if (it != _prices.end() && it->first == date) return it->second;
     if (it == _prices.begin()) throw std::runtime_error("No earlier date in database");
-    if (it == _prices.end() || it->first > date) --it; // take previous
+    if (it == _prices.end() || it->first > date) --it;
     return it->second;
 }
 
@@ -77,6 +64,7 @@ void BitcoinExchange::loadPriceDatabase(const std::string &csvPath) {
     std::ifstream f(csvPath.c_str());
     if (!f) throw std::runtime_error("Error: could not open file.");
     std::string line;
+    double rate;
     // Expect header "date,exchange_rate"
     if (!std::getline(f, line)) throw std::runtime_error("Error: empty database file.");
     while (std::getline(f, line)) {
@@ -86,7 +74,6 @@ void BitcoinExchange::loadPriceDatabase(const std::string &csvPath) {
         if (std::getline(iss, date, ',') && std::getline(iss, rateStr)) {
             date = trim(date);
             rateStr = trim(rateStr);
-            double rate;
             if (!isValidDate(date)) continue; // Skip invalid date in DB silently
             if (!stringToDouble(rateStr, rate)) continue;
             _prices[date] = rate;
@@ -99,7 +86,7 @@ void BitcoinExchange::evaluateInputFile(const std::string &inputPath) const {
     std::ifstream f(inputPath.c_str());
     if (!f) throw std::runtime_error("Error: could not open file.");
     std::string line;
-    if (std::getline(f, line)) { /* header maybe, ignore content */ }
+    if (std::getline(f, line)) {}
     while (std::getline(f, line)) {
         if (line.empty()) continue;
         std::string date; double value;
