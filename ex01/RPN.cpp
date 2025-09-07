@@ -23,8 +23,8 @@ RPN::RPN(const std::string & exp)
             s.push(std::stoi(c));
         else
         { 
-            int b = s.top(); s.pop();
-            int a = s.top(); s.pop();
+            b = s.top(); s.pop();
+            a = s.top(); s.pop();
             if (c == "+")       res = a + b;
             else if (c == "-") res = a - b;
             else if (c == "*") res = a * b;
@@ -42,10 +42,12 @@ RPN::RPN(const std::string & exp)
         std::cout << s.top() << std::endl;
 }
 
-RPN::RPN(const RPN &other) {}
+RPN::RPN(const RPN &other) {
+    (void)other;
+}
 
 RPN &RPN::operator=(const RPN &other) {
-    
+    (void)other; 
     return *this;
 }
 
