@@ -18,9 +18,9 @@ bool BitcoinExchange::isLeapYear(int year) {
 bool BitcoinExchange::isValidDate(const std::string &date) {
     if (date.size() != 10 || date[4] != '-' || date[7] != '-') return false;
     int y, m, d;
-    std::istringstream iss(date.substr(0,4) + date.substr(5,2) + date.substr(8,2));
+    std::istringstream iss(date.substr(0,4) + ' ' +  date.substr(5,2) + ' ' + date.substr(8,2));
     if (!(iss >> y >> m >> d))
-        return false;
+       return false;
     if (y < 0 || m < 1 || m > 12 || d < 1)
         return false;
     int mdays[] = {31, (isLeapYear(y) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -28,11 +28,19 @@ bool BitcoinExchange::isValidDate(const std::string &date) {
     return true;
 }
 
-std::string BitcoinExchange::trim(const std::string &s) {
-    size_t start = 0; while (start < s.size() && (s[start] == ' ' || s[start] == '\t')) ++start;
-    size_t end = s.size(); while (end > start && (s[end-1] == ' ' || s[end-1] == '\t')) --end;
-    return s.substr(start, end - start);
+std::string trim(std::string line)
+{
+    size_t start = 0;
+    size_t end = line.size();
+
+    while ((start < end) && (line[start] == ' ' || line[start] == '\t'))
+        start++;
+    while ((start < end) && ((line[end - 1] == ' ' || line[end - 1] == '\t')))
+        end++;
+    return (line.substr(start, end - start));
 }
+
+
 
 bool BitcoinExchange::stringToDouble(const std::string &s, double &out) {
     char *end = 0;
@@ -43,20 +51,26 @@ bool BitcoinExchange::stringToDouble(const std::string &s, double &out) {
 
 bool BitcoinExchange::parseLine(const std::string &line, std::string &date, double &value) {
     size_t sep = line.find('|');
-    if (sep == std::string::npos) return false;
+    if (sep == std::string::npos)
+        return false;
     date = trim(line.substr(0, sep));
-    if (date.size() && date[date.size()-1] == '-') return false;
+    if (date.size() && date[date.size()-1] == '-')
+        return false;
     std::string valueStr = trim(line.substr(sep + 1));
-    if (!isValidDate(date)) return false;
-    if (!stringToDouble(valueStr, value)) return false;
+    if (!isValidDate(date))
+        return false;
+    if (!stringToDouble(valueStr, value))
+        return false;
     return true;
 }
 
 double BitcoinExchange::getRateForDate(const std::string &date) const {
     std::map<std::string, double>::const_iterator it = _prices.lower_bound(date);
-    if (it != _prices.end() && it->first == date) return it->second;
+    if (it != _prices.end() && it->first == date)
+        return it->second;
     if (it == _prices.begin()) throw std::runtime_error("No earlier date in database");
-    if (it == _prices.end() || it->first > date) --it;
+    if (it == _prices.end() || it->first > date)
+        --it;
     return it->second;
 }
 
@@ -65,8 +79,10 @@ void BitcoinExchange::loadPriceDatabase(const std::string &csvPath) {
     if (!f) throw std::runtime_error("Error: could not open file.");
     std::string line;
     double rate;
-    // Expect header "date,exchange_rate"
-    if (!std::getline(f, line)) throw std::runtime_error("Error: empty database file.");
+
+    if (!std::getline(f, line))
+        throw std::runtime_error("Error: empty database file.");
+
     while (std::getline(f, line)) {
         if (line.empty()) continue;
         std::istringstream iss(line);
@@ -74,8 +90,10 @@ void BitcoinExchange::loadPriceDatabase(const std::string &csvPath) {
         if (std::getline(iss, date, ',') && std::getline(iss, rateStr)) {
             date = trim(date);
             rateStr = trim(rateStr);
-            if (!isValidDate(date)) continue; // Skip invalid date in DB silently
+            
+            if (!isValidDate(date)) continue;
             if (!stringToDouble(rateStr, rate)) continue;
+
             _prices[date] = rate;
         }
     }
