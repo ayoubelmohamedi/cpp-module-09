@@ -17,7 +17,7 @@ class RPN
         ~RPN();
     
     private:
-        bool is_ops(std::string & c);
+        bool is_ops(const std::string & c);
     
 
 };
