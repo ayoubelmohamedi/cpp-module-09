@@ -24,19 +24,31 @@ PmergeMe::PmergeMe(char **av)
     std::vector<int> v = args;
     std::list<int> l(v.begin(), v.end());
 
-    std::cout << "Before :";
+    std::cout << "Before : ";
     print_vector(v);
+    clock_t start_vec = clock();
     vector_merge(v.begin(), v.end());
-    
-    std::cout << "After :";
+    clock_t end_vec = clock();
+    std::cout << "After : ";
     print_vector(v);
 
-    std::cout << "List : " << std::endl;
-    std::cout << "Before :";
+    std::cout << "Before : ";
     print_list(l);
+
+    clock_t start_list = clock();
     list_merge(l);
+    clock_t end_list = clock(); 
     std::cout << "After :";
     print_list(l);
+
+    double vec_time = 1e6 * (end_vec - start_vec) / CLOCKS_PER_SEC;
+    double list_time = 1e6 * (end_list - start_list) / CLOCKS_PER_SEC;
+
+    std::cout << "Time to process a range of " << v.size()
+              << " elements with std::vector : " << vec_time << " us" << std::endl;
+    std::cout << "Time to process a range of " << l.size()
+              << " elements with std::list : " << list_time << " us" << std::endl;
+
 
 }
 
