@@ -1,7 +1,8 @@
 
 #include <string>
-#include <set>
 #include <iostream>
+#include <vector>
+#include <list>
 
 bool is_number(const char *s)
 {
@@ -16,28 +17,39 @@ bool is_number(const char *s)
     return (true);
 }
 
-void merge_set(std::set<int>::iterator start, std::set<int>::iterator end)
+
+void sort_vector(std::vector<int>::iterator start, std::vector<int>::iterator end)
 {
     size_t dist = std::distance(start, end);
     if (dist <= 1)
         return ;
     
-    std::set<int>::iterator mid = start;
+    std::vector<int>::iterator mid = start;
     std::advance(mid, dist / 2);
     
-    std::cout << " dist / 2 "<< dist / 2 << std::endl;
+    sort_vector(start, mid);
+    sort_vector(mid, end);
+    
+    std::vector<int> merged;
+    std::vector<int>::iterator left = start, right  = mid;
 
-    merge_set(start, mid);
-    merge_set(mid, end);
+    while (left != mid && right != end)
+    {
+        if (*left  < *right)
+            merged.push_back(*left++);
+        else
+            merged.push_back(*right++); 
+    }
+    merged.insert(merged.end(), left, mid);
+    merged.insert(merged.end(), right, end);
+    std::move(merged.begin(), merged.end(), start); 
+}
 
-
-
-
-    std::set<int>::iterator left = start, right = mid;
-    std::cout << "mid " << *mid << " left is " << *left << " right is " << *right << std::endl;
-
+void list_merge(std::list<int> &lst)
+{
 
 }
+
 
 int main(int ac, char **av)
 {
@@ -60,22 +72,17 @@ int main(int ac, char **av)
 
     // merge_set(nbrs.begin(),nbrs.end());
 
-    std::vector<int> v;
+    std::vector<int> v = {4, 3, 2,  1,5, 12,89, -6};
+    for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
+    
+    std::vector<int>::iterator start = v.begin(), end = v.end();
+    sort_vector(start , end);
 
-    std::vector<int> v2;
-
-    v.push_back(5);
-    v.push_back(std::move(12));
-    v.push_back(1);
-
-    std::cout << "before " << v[1] << std::endl;
-    std::cout << v[1] << std::endl;
-
-    v2 = v;
-
-    v2.insert(1, 0, v.size());
-
-
+    for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
 
 
     return (0);
