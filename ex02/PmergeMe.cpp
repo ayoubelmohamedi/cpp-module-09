@@ -11,7 +11,11 @@ PmergeMe::PmergeMe(char **av)
     while (av[i])
     {
         if (is_number(av[i]))
-            args.push_back(std::atoi(av[i]));
+        {
+            int val;
+            std::istringstream(av[i]) >> val;
+            args.push_back(val);
+        }
         else
             throw std::runtime_error("Invalid input");
         ++i;
@@ -20,12 +24,12 @@ PmergeMe::PmergeMe(char **av)
     std::vector<int> v = args;
     std::list<int> l(v.begin(), v.end());
 
+
     vector_merge(v.begin(), v.end());
 
     list_merge(l);
 
 }
-
 
 
 bool PmergeMe::is_number(const char *s)
@@ -92,6 +96,17 @@ void PmergeMe::list_merge(std::list<int> &lst)
 
 }
 
+void PmergeMe::print_vector(const std::vector<int>& v) const {
+    for (std::vector<int>::const_iterator it = v.begin(); it != v.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
+}
+
+void PmergeMe::print_list(const std::list<int>& l) const{
+    for (std::list<int>::const_iterator it = l.begin(); it != l.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
+}
 
 PmergeMe::~PmergeMe() {}
 
