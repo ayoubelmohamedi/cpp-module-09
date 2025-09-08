@@ -24,10 +24,19 @@ PmergeMe::PmergeMe(char **av)
     std::vector<int> v = args;
     std::list<int> l(v.begin(), v.end());
 
-
+    std::cout << "Before :";
+    print_vector(v);
     vector_merge(v.begin(), v.end());
+    
+    std::cout << "After :";
+    print_vector(v);
 
+    std::cout << "List : " << std::endl;
+    std::cout << "Before :";
+    print_list(l);
     list_merge(l);
+    std::cout << "After :";
+    print_list(l);
 
 }
 
@@ -70,7 +79,7 @@ void PmergeMe::vector_merge(std::vector<int>::iterator start, std::vector<int>::
     }
     merged.insert(merged.end(), left, mid);
     merged.insert(merged.end(), right, end);
-    std::move(merged.begin(), merged.end(), start); 
+    std::copy(merged.begin(), merged.end(), start); 
 }
 
 void PmergeMe::list_merge(std::list<int> &lst)
