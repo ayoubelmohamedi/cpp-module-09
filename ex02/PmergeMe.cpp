@@ -80,6 +80,7 @@ void PmergeMe::vector_merge(std::vector<int>::iterator start, std::vector<int>::
     vector_merge(mid, end);
     
     std::vector<int> merged;
+    merged.reserve(dist);
     std::vector<int>::iterator left = start, right  = mid;
 
     while (left != mid && right != end)
