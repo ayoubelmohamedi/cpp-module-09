@@ -20,7 +20,12 @@ RPN::RPN(const std::string & exp)
             throw std::runtime_error("Error: not enough operands");
         
         if (!is_ops(c))
-            s.push(std::stoi(c));
+        {
+            int val;
+            std::istringstream iss_num(c);
+            iss_num >> val;
+            s.push(val);
+        }
         else
         { 
             b = s.top(); s.pop();
