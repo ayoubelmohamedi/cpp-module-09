@@ -47,6 +47,24 @@ void sort_vector(std::vector<int>::iterator start, std::vector<int>::iterator en
 
 void list_merge(std::list<int> &lst)
 {
+    if (lst.size() <= 1)
+        return ;
+    
+    std::list<int> left, right;
+
+    std::list<int>::iterator mid = lst.begin();
+    size_t dest = std::distance(lst.begin(), lst.end()); 
+    std::advance(mid, dest / 2);
+
+    left.splice(left.begin(), lst, lst.begin(), mid); 
+    right.splice(right.begin(), lst, mid, lst.end());
+
+    list_merge(left);
+    list_merge(right);
+
+
+    lst.merge(left);
+    lst.merge(right);
 
 }
 
@@ -83,6 +101,16 @@ int main(int ac, char **av)
     for (std::vector<int>::iterator it = v.begin(); it != v.end(); ++it)
         std::cout << *it << " ";
     std::cout << std::endl;
+
+    std::cout << "========== list ============" << std::endl;
+
+    std::list<int> l = {4, 3, 2,  1,5, 12,89, -6};
+
+    list_merge(l);
+    for (std::list<int>::iterator it = l.begin(); it != l.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
+
 
 
     return (0);
