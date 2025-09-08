@@ -51,7 +51,7 @@ RPN &RPN::operator=(const RPN &other) {
     return *this;
 }
 
-bool RPN::is_ops(std::string &c)
+bool RPN::is_ops(const std::string &c)
 {
     if (c == "+" || c == "-" || c == "/" || c == "*") 
         return (true);
