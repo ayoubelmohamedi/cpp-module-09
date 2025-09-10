@@ -5,10 +5,29 @@
 #include <cstdlib>
 #include <climits>
 
-BitcoinExchange::BitcoinExchange() {}
-BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) : _prices(other._prices) {}
-BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) { if (this != &other) _prices = other._prices; return *this; }
-BitcoinExchange::~BitcoinExchange() {}
+BitcoinExchange::BitcoinExchange() {
+
+}
+
+
+
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &other) : _prices(other._prices) {
+
+}
+
+
+
+BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &other) {
+     if (this != &other) 
+        _prices = other._prices; 
+        
+    return *this; 
+}
+
+
+BitcoinExchange::~BitcoinExchange() {
+
+}
 
 
 bool BitcoinExchange::isLeapYear(int year) {
@@ -16,15 +35,23 @@ bool BitcoinExchange::isLeapYear(int year) {
 }
 
 bool BitcoinExchange::isValidDate(const std::string &date) {
-    if (date.size() != 10 || date[4] != '-' || date[7] != '-') return false;
+    if (date.size() != 10 || date[4] != '-' || date[7] != '-') 
+        return false;
+
     int y, m, d;
     std::istringstream iss(date.substr(0,4) + ' ' +  date.substr(5,2) + ' ' + date.substr(8,2));
+    
     if (!(iss >> y >> m >> d))
        return false;
+    
     if (y < 0 || m < 1 || m > 12 || d < 1)
         return false;
+    
     int mdays[] = {31, (isLeapYear(y) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    if (d > mdays[m-1]) return false;
+    
+    if (d > mdays[m-1])
+        return false;
+
     return true;
 }
 
@@ -48,6 +75,8 @@ bool BitcoinExchange::stringToDouble(const std::string &s, double &out) {
     if (*s.c_str() == '\0' || *end != '\0') return false;
     return true;
 }
+
+
 
 bool BitcoinExchange::parseLine(const std::string &line, std::string &date, double &value) {
     size_t sep = line.find('|');
@@ -112,19 +141,21 @@ void BitcoinExchange::evaluateInputFile(const std::string &inputPath) const {
             if (line.find('|') == std::string::npos) {
                 std::cerr << "Error: bad input => " << line << std::endl;
             } else {
-                // Could differentiate more errors
                 std::cerr << "Error: bad input => " << line << std::endl;
             }
             continue;
         }
+
         if (value < 0) {
             std::cerr << "Error: not a positive number." << std::endl;
             continue;
         }
+
         if (value > 1000) {
             std::cerr << "Error: too large a number." << std::endl;
             continue;
         }
+
         try {
             double rate = getRateForDate(date);
             double result = rate * value;
