@@ -1,5 +1,3 @@
-
-
 #include "PmergeMe.hpp"
 
 
@@ -14,6 +12,8 @@ PmergeMe::PmergeMe(char **av)
         {
             int val;
             std::istringstream(av[i]) >> val;
+            if (val < 0)
+                throw std::runtime_error("Invalid input: negative number");
             args.push_back(val);
         }
         else
@@ -55,34 +55,30 @@ PmergeMe::PmergeMe(char **av)
 
 bool PmergeMe::is_number(const char *s)
 {
-    if (!s)
+    if (!s || !*s)
         return (false);
     while (*s)
     {
-        if (!std::isdigit(*s))
+        if (!std::isdigit(static_cast<unsigned char>(*s)))
             return (false);
         ++s;
     }
     return (true);
 }
 
-
 void PmergeMe::vector_merge(std::vector<int>::iterator start, std::vector<int>::iterator end)
 {
     size_t dist = std::distance(start, end);
     if (dist <= 1)
         return ;
-    
+
     std::vector<int>::iterator mid = start;
     std::advance(mid, dist / 2);
-    
     vector_merge(start, mid);
     vector_merge(mid, end);
-    
     std::vector<int> merged;
     merged.reserve(dist);
     std::vector<int>::iterator left = start, right  = mid;
-
     while (left != mid && right != end)
     {
         if (*left  < *right)
@@ -99,23 +95,18 @@ void PmergeMe::list_merge(std::list<int> &lst)
 {
     if (lst.size() <= 1)
         return ;
-    
-    std::list<int> left, right;
 
+    std::list<int> left, right;
     std::list<int>::iterator mid = lst.begin();
+
     size_t dest = std::distance(lst.begin(), lst.end()); 
     std::advance(mid, dest / 2);
-
     left.splice(left.begin(), lst, lst.begin(), mid); 
     right.splice(right.begin(), lst, mid, lst.end());
-
     list_merge(left);
     list_merge(right);
-
-
-    lst.merge(left);
-    lst.merge(right);
-
+    left.merge(right);
+    lst.swap(left); 
 }
 
 void PmergeMe::print_vector(const std::vector<int>& v) const {
