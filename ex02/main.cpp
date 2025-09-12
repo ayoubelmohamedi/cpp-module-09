@@ -2,9 +2,10 @@
 #include "PmergeMe.hpp"
 
 
+
+
 void insert_merge(std::vector <int> &m, int n)
 {
-
     std::vector<int>::iterator it = std::lower_bound(m.begin(), m.end(), n);
     m.insert(it, n); 
 }
@@ -33,7 +34,14 @@ void rec_sort(std::vector <int> &v)
     }
     if (i  <  v.size())
         m.push_back(v[i]);
-      
+    
+    std::cout << "m: ";
+    for (size_t k = 0; k < m.size(); ++k)
+        std::cout << v[k] << (k + 1 < v.size() ? " " : "");
+    std::cout << std::endl;
+
+
+    
     rec_sort(m);
 
     for (int & i : p)
