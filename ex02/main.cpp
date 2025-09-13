@@ -49,6 +49,54 @@ void rec_sort(std::vector <int> &v)
     v = m;
 }
 
+
+
+void print_list(const std::list<int> &l);
+
+void list_merge(std::list<int> &lst)
+{
+    if (lst.size() <= 1)
+        return;
+
+    std::list<int> left, right;
+    std::list<int>::iterator mid = lst.begin();
+
+    size_t dest = std::distance(lst.begin(), lst.end());
+    std::advance(mid, dest / 2);
+    left.splice(left.begin(), lst, lst.begin(), mid);
+
+    right.splice(right.begin(), lst, mid, lst.end());
+    list_merge(left);
+    list_merge(right);
+    left.merge(right);
+    lst.swap(left);
+    std::cout << "left now : " << std::endl;
+    print_list(lst);
+}
+
+
+void list_insert_merge(std::list<int> &lst)
+{
+    if (lst.size() <= 1)
+        return;
+
+    std::list <int> maxima;
+    std::vector<int> minima;
+
+    minima.reserve(lst.size(), );
+    
+}
+
+
+
+void print_list(const std::list<int> &l)
+{
+    for (std::list<int>::const_iterator it = l.begin(); it != l.end(); ++it)
+        std::cout << *it << " ";
+    std::cout << std::endl;
+}
+
+
 int main(int ac, char **av)
 {
     // if (ac < 2)
@@ -66,21 +114,49 @@ int main(int ac, char **av)
     //     return (1);
     // } 
 
-    std::vector<int> v = {12, 5, 8, 3, 10};
-    rec_sort(v);
-
-    std::cout << "v: ";
-    for (size_t k = 0; k < v.size(); ++k)
-        std::cout << v[k] << (k + 1 < v.size() ? " " : "");
-    std::cout << std::endl;
-
-    // std::vector<int> v2 = {5, 6, 8, 12, 100};
-    // insert_merge(v2, 9);
+    // std::vector<int> v = {12, 5, 8, 3, 10};
+    std::list<int> l;
+    std::list<int> r = { 3, 10, 12};
     
-    // std::cout << "v2: ";
-    // for (size_t k = 0; k < v2.size(); ++k)
-    //     std::cout << v2[k] << (k + 1 < v2.size() ? " " : "");
-    // std::cout << std::endl; 
+
+
+    std::list<int> v = {12, 5, 8, 3, 10};
+
+
+    l.splice(l.begin(), v, v.begin(), v.end());
+    // l.sort();
+
+    // print_list(l);
+    // r.sort();
+    // print_list(r);
+    l.merge(r);
+
+    print_list(l);
+
+    v.swap(l);
+
+    print_list(v);
+
+    // std::list<int> left, right;
+    // std::list<int>::iterator mid = l.begin();
+
+    // // size_t dest = std::distance(l.begin(), l.end());
+    // // std::advance(mid, dest / 2);
+    // // left.splice(left.begin(), l, l.begin(), mid);
+
+    // // print_list(left);
+
+    // // print_list(l);
+    // // right.splice(right.begin(), l, mid, l.end());
+
+    
+    // // print_list(right);
+    // // rec_sort(v);
+
+
+    // list_merge(l);
+    // print_list(l);
+
 
     return (0);
 }
