@@ -106,7 +106,8 @@ bool PmergeMe::is_number(const char *s)
     return (true);
 }
 
-// helpers for insertion into sorted containers
+// helpers for insertion 
+
 static void insert_merge(std::vector<int> &m, int n)
 {
     std::vector<int>::iterator it = std::lower_bound(m.begin(), m.end(), n);
@@ -133,14 +134,15 @@ static void insert_deque_minima(std::deque<int> &m, const std::deque<int> &p)
         insert_merge_deque(m, p[order[oi]]);
 }
 
-// Ford–Johnson (merge-insert) on vector
+// Ford Johnson algo (merge-insert) 
+
 void PmergeMe::vector_merge(std::vector<int> &vec)
 {
     if (vec.size() <= 1)
         return;
 
-    std::vector<int> m; // maxima (base)
-    std::vector<int> p; // minima (to insert)
+    std::vector<int> m;
+    std::vector<int> p;
     m.reserve(vec.size());
     p.reserve(vec.size() / 2 + 1);
 
@@ -149,41 +151,54 @@ void PmergeMe::vector_merge(std::vector<int> &vec)
     {
         int a = vec[i];
         int b = vec[i + 1];
-        if (a > b) { m.push_back(a); p.push_back(b); }
-        else       { m.push_back(b); p.push_back(a); }
+        if (a > b)
+        { 
+            m.push_back(a);
+            p.push_back(b); 
+        }
+        else
+        {
+            m.push_back(b);
+            p.push_back(a);
+        }
         i += 2;
     }
     if (i < vec.size())
         m.push_back(vec[i]);
 
-    vector_merge(m);                 // sort base
-    insert_vector_minima(m, p);      // insert minima (Jacobsthal order)
+    vector_merge(m);      
+    insert_vector_minima(m, p);
     vec.swap(m);
 }
 
-// Ford–Johnson (merge-insert) on deque
 void PmergeMe::deque_merge(std::deque<int> &dq)
 {
     if (dq.size() <= 1)
         return;
 
-    std::deque<int> m; // maxima (base)
-    std::deque<int> p; // minima (to insert)
+    std::deque<int> m;
+    std::deque<int> p;
 
     size_t i = 0;
     while (i + 1 < dq.size())
     {
         int a = dq[i];
         int b = dq[i + 1];
-        if (a > b) { m.push_back(a); p.push_back(b); }
-        else       { m.push_back(b); p.push_back(a); }
+        if (a > b) { 
+            m.push_back(a);
+            p.push_back(b);
+        }
+        else {
+            m.push_back(b);
+            p.push_back(a);
+        }
         i += 2;
     }
     if (i < dq.size())
         m.push_back(dq[i]);
 
-    deque_merge(m);                  // sort base
-    insert_deque_minima(m, p);       // insert minima (Jacobsthal order)
+    deque_merge(m);
+    insert_deque_minima(m, p);
     dq.swap(m);
 }
 
