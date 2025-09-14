@@ -53,11 +53,9 @@ PmergeMe::PmergeMe(char **av)
     if (args.empty())
         return;
     
-    // populate member containers once (avoid shadowing locals)
     v = args;
     q.assign(v.begin(), v.end());
 
-    // run benchmark on construction for this project
     runTest();
 }
 
@@ -66,7 +64,7 @@ void PmergeMe::runTest()
     if (v.empty())
         return;
 
-    // Vector
+    // for vector 
     std::cout << "Before : ";
     print_vector(v);
     clock_t start_vec = clock();
@@ -75,7 +73,7 @@ void PmergeMe::runTest()
     std::cout << "After  : ";
     print_vector(v);
 
-    // Deque
+    // for deque
     std::cout << "Before : ";
     print_deque(q);
     clock_t start_deque = clock();
