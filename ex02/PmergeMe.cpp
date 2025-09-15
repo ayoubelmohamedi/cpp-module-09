@@ -52,42 +52,43 @@ PmergeMe::PmergeMe(char **av)
     }
     if (args.empty())
         return;
-    j_order = jacobsthal_order(args.size());
-
+    
     v = args;
-    l.assign(v.begin(), v.end());
-    std::list<int> l(v.begin(), v.end());
+    q.assign(v.begin(), v.end());
+
+    runTest();
 }
 
 void PmergeMe::runTest()
 {
-
     if (v.empty())
+        return;
 
-        std::cout << "Before : ";
+    // for vector 
+    std::cout << "Before : ";
     print_vector(v);
     clock_t start_vec = clock();
-    vector_merge(v.begin(), v.end());
+    vector_merge(v);
     clock_t end_vec = clock();
-    std::cout << "After : ";
+    std::cout << "After  : ";
     print_vector(v);
 
+    // for deque
     std::cout << "Before : ";
-    print_list(l);
-
-    clock_t start_list = clock();
-    list_merge(l);
-    clock_t end_list = clock();
-    std::cout << "After :";
-    print_list(l);
+    print_deque(q);
+    clock_t start_deque = clock();
+    deque_merge(q);
+    clock_t end_deque = clock();
+    std::cout << "After  : ";
+    print_deque(q);
 
     double vec_time = 1e6 * (end_vec - start_vec) / CLOCKS_PER_SEC;
-    double list_time = 1e6 * (end_list - start_list) / CLOCKS_PER_SEC;
+    double deq_time = 1e6 * (end_deque - start_deque) / CLOCKS_PER_SEC;
 
     std::cout << "Time to process a range of " << v.size()
               << " elements with std::vector : " << vec_time << " us" << std::endl;
-    std::cout << "Time to process a range of " << l.size()
-              << " elements with std::list : " << list_time << " us" << std::endl;
+    std::cout << "Time to process a range of " << q.size()
+              << " elements with std::deque   : " << deq_time << " us" << std::endl;
 }
 
 bool PmergeMe::is_number(const char *s)
@@ -103,69 +104,100 @@ bool PmergeMe::is_number(const char *s)
     return (true);
 }
 
-void insert_merge(std::vector<int> &m, int n)
+// helpers for insertion 
+
+static void insert_merge(std::vector<int> &m, int n)
 {
     std::vector<int>::iterator it = std::lower_bound(m.begin(), m.end(), n);
     m.insert(it, n);
 }
 
-void insert_minima(std::vector<int> &m, std::vector<int> &p)
+static void insert_vector_minima(std::vector<int> &m, const std::vector<int> &p)
 {
     std::vector<size_t> order = jacobsthal_order(p.size());
-    for (size_t idx : order)
-        insert_merge(m, p[idx]);
+    for (size_t oi = 0; oi < order.size(); ++oi)
+        insert_merge(m, p[order[oi]]);
 }
 
-
-void vector_merge(std::vector <int> &v)
+static void insert_merge_deque(std::deque<int> &m, int n)
 {
-    if (v.empty() || v.size() == 1)
-        return ; 
+    std::deque<int>::iterator it = std::lower_bound(m.begin(), m.end(), n);
+    m.insert(it, n);
+}
 
-    std::vector <int> m , p;
+static void insert_deque_minima(std::deque<int> &m, const std::deque<int> &p)
+{
+    std::vector<size_t> order = jacobsthal_order(p.size());
+    for (size_t oi = 0; oi < order.size(); ++oi)
+        insert_merge_deque(m, p[order[oi]]);
+}
+
+// Ford Johnson algo (merge-insert) 
+
+void PmergeMe::vector_merge(std::vector<int> &vec)
+{
+    if (vec.size() <= 1)
+        return;
+
+    std::vector<int> m;
+    std::vector<int> p;
+    m.reserve(vec.size());
+    p.reserve(vec.size() / 2 + 1);
 
     size_t i = 0;
-    while (i + 1 < v.size())
-    { 
-        if (v[i] > v[i + 1])
-        {
-            m.push_back(v[i]);
-            p.push_back(v[i + 1]);
+    while (i + 1 < vec.size())
+    {
+        int a = vec[i];
+        int b = vec[i + 1];
+        if (a > b)
+        { 
+            m.push_back(a);
+            p.push_back(b); 
         }
         else
         {
-            m.push_back(v[i + 1]);
-            p.push_back(v[i]);
+            m.push_back(b);
+            p.push_back(a);
         }
         i += 2;
     }
-    if (i  <  v.size())
-        m.push_back(v[i]); 
-    
-    vector_merge(m);
+    if (i < vec.size())
+        m.push_back(vec[i]);
 
-    insert_minima(m, p);
-    v = m;
+    vector_merge(m);      
+    insert_vector_minima(m, p);
+    vec.swap(m);
 }
 
-
-
-void PmergeMe::list_merge(std::list<int> &lst)
+void PmergeMe::deque_merge(std::deque<int> &dq)
 {
-    if (lst.size() <= 1)
+    if (dq.size() <= 1)
         return;
 
-    std::list<int> left, right;
-    std::list<int>::iterator mid = lst.begin();
+    std::deque<int> m;
+    std::deque<int> p;
 
-    size_t dest = std::distance(lst.begin(), lst.end());
-    std::advance(mid, dest / 2);
-    left.splice(left.begin(), lst, lst.begin(), mid);
-    right.splice(right.begin(), lst, mid, lst.end());
-    list_merge(left);
-    list_merge(right);
-    left.merge(right);
-    lst.swap(left);
+    size_t i = 0;
+    while (i + 1 < dq.size())
+    {
+        int a = dq[i];
+        int b = dq[i + 1];
+        if (a > b) { 
+            m.push_back(a);
+            p.push_back(b);
+        }
+        else {
+            m.push_back(b);
+            p.push_back(a);
+        }
+        i += 2;
+    }
+    if (i < dq.size())
+        m.push_back(dq[i]);
+
+    deque_merge(m);
+    insert_deque_minima(m, p);
+    dq.swap(m);
 }
 
 void PmergeMe::print_vector(const std::vector<int> &v) const
@@ -175,9 +207,9 @@ void PmergeMe::print_vector(const std::vector<int> &v) const
     std::cout << std::endl;
 }
 
-void PmergeMe::print_list(const std::list<int> &l) const
+void PmergeMe::print_deque(const std::deque<int> &l) const
 {
-    for (std::list<int>::const_iterator it = l.begin(); it != l.end(); ++it)
+    for (std::deque<int>::const_iterator it = l.begin(); it != l.end(); ++it)
         std::cout << *it << " ";
     std::cout << std::endl;
 }

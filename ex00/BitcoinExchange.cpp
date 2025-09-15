@@ -4,6 +4,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <climits>
+#include <cctype>
 
 BitcoinExchange::BitcoinExchange() {
 
@@ -39,7 +40,7 @@ bool BitcoinExchange::isValidDate(const std::string &date) {
         return false;
 
     int y, m, d;
-    std::istringstream iss(date.substr(0,4) + ' ' +  date.substr(5,2) + ' ' + date.substr(8,2));
+    std::istringstream iss(date.substr(0,4) + std::string(" ") +  date.substr(5,2) + std::string(" ") + date.substr(8,2));
     
     if (!(iss >> y >> m >> d))
        return false;
@@ -55,16 +56,16 @@ bool BitcoinExchange::isValidDate(const std::string &date) {
     return true;
 }
 
-std::string trim(std::string line)
+std::string BitcoinExchange::trim(const std::string &s)
 {
     size_t start = 0;
-    size_t end = line.size();
+    size_t end = s.size();
 
-    while ((start < end) && (line[start] == ' ' || line[start] == '\t'))
-        start++;
-    while ((start < end) && ((line[end - 1] == ' ' || line[end - 1] == '\t')))
-        end++;
-    return (line.substr(start, end - start));
+    while (start < end && std::isspace(static_cast<unsigned char>(s[start])))
+        ++start;
+    while (end > start && std::isspace(static_cast<unsigned char>(s[end - 1])))
+        --end;
+    return s.substr(start, end - start);
 }
 
 
@@ -79,13 +80,16 @@ bool BitcoinExchange::stringToDouble(const std::string &s, double &out) {
 
 
 bool BitcoinExchange::parseLine(const std::string &line, std::string &date, double &value) {
+    // Support both "date | value" and "date,value" inputs
     size_t sep = line.find('|');
     if (sep == std::string::npos)
+        sep = line.find(',');
+    if (sep == std::string::npos)
         return false;
+
     date = trim(line.substr(0, sep));
-    if (date.size() && date[date.size()-1] == '-')
-        return false;
     std::string valueStr = trim(line.substr(sep + 1));
+
     if (!isValidDate(date))
         return false;
     if (!stringToDouble(valueStr, value))
@@ -133,16 +137,23 @@ void BitcoinExchange::evaluateInputFile(const std::string &inputPath) const {
     std::ifstream f(inputPath.c_str());
     if (!f) throw std::runtime_error("Error: could not open file.");
     std::string line;
-    if (std::getline(f, line)) {}
+
+    bool first = true;
     while (std::getline(f, line)) {
         if (line.empty()) continue;
+        if (first) {
+            std::string t = trim(line);
+            if (t.find("date") != std::string::npos) 
+            {
+                 first = false; 
+                 continue; 
+            }
+            first = false;
+        }
+
         std::string date; double value;
         if (!parseLine(line, date, value)) {
-            if (line.find('|') == std::string::npos) {
-                std::cerr << "Error: bad input => " << line << std::endl;
-            } else {
-                std::cerr << "Error: bad input => " << line << std::endl;
-            }
+            std::cerr << "Error: bad input => " << line << std::endl;
             continue;
         }
 
