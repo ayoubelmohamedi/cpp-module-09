@@ -101,7 +101,8 @@ double BitcoinExchange::getRateForDate(const std::string &date) const {
     std::map<std::string, double>::const_iterator it = _prices.lower_bound(date);
     if (it != _prices.end() && it->first == date)
         return it->second;
-    if (it == _prices.begin()) throw std::runtime_error("No earlier date in database");
+    if (it == _prices.begin())
+        throw std::runtime_error("No earlier date in database");
     if (it == _prices.end() || it->first > date)
         --it;
     return it->second;
