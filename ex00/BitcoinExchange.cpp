@@ -101,7 +101,8 @@ double BitcoinExchange::getRateForDate(const std::string &date) const {
     std::map<std::string, double>::const_iterator it = _prices.lower_bound(date);
     if (it != _prices.end() && it->first == date)
         return it->second;
-    if (it == _prices.begin()) throw std::runtime_error("No earlier date in database");
+    if (it == _prices.begin())
+        throw std::runtime_error("No earlier date in database");
     if (it == _prices.end() || it->first > date)
         --it;
     return it->second;
@@ -170,7 +171,6 @@ void BitcoinExchange::evaluateInputFile(const std::string &inputPath) const {
         try {
             double rate = getRateForDate(date);
             double result = rate * value;
-            std::cout.setf(std::ios::fixed);
             std::cout.precision(2);
             std::cout << date << " => " << value << " = " << result << std::endl;
         } catch (const std::exception &e) {
