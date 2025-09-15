@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <deque> // real container , unlike queue which is an adaptor 
+#include <deque> // real container ,unlike queue which is an adaptor 
 #include <sstream>
 #include <algorithm>
 #include <ctime>
