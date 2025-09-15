@@ -171,7 +171,6 @@ void BitcoinExchange::evaluateInputFile(const std::string &inputPath) const {
         try {
             double rate = getRateForDate(date);
             double result = rate * value;
-            std::cout.setf(std::ios::fixed);
             std::cout.precision(2);
             std::cout << date << " => " << value << " = " << result << std::endl;
         } catch (const std::exception &e) {
